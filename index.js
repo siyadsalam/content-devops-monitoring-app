@@ -15,6 +15,11 @@ const todocounter = new prom.Counter({
   help: 'The number of new task added to our application'
 });
 
+const todogauge = new prom.Gauge({
+  name: 'forethought_current_todos',
+  help: 'The Amount of current incomplete task'
+});
+
 // use css
 app.use(express.static("public"));
 
@@ -28,6 +33,7 @@ app.post("/addtask", function(req, res) {
   task.push(newTask);
   res.redirect("/");
   todocounter.inc();
+  todogauge.inc();
 });
 
 // remove a task
@@ -41,6 +47,7 @@ app.post("/removetask", function(req, res) {
     for (var i = 0; i < completeTask.length; i++) {
       complete.push(completeTask[i]);
       task.splice(task.indexOf(completeTask[i]), 1);
+      todogauge.dec();
     }
   }
   res.redirect("/");
