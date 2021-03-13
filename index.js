@@ -9,6 +9,12 @@ collectDefaultMetrics({prefix: 'forthought'});
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
+//metrics list
+const todocounter = new prom.Counter({
+  name: 'forethought_number_of_new_todos',
+  help: 'The number of new task added to our application'
+});
+
 // use css
 app.use(express.static("public"));
 
@@ -21,6 +27,7 @@ app.post("/addtask", function(req, res) {
   var newTask = req.body.newtask;
   task.push(newTask);
   res.redirect("/");
+  todocounter.inc();
 });
 
 // remove a task
